@@ -15,6 +15,8 @@ module datapath (clk, reset);
   wire [31:0] pcNewtoID, busAtoID, busBtoID;
   wire [25:0] targettoID;
   wire [31:0] instoID;
+  wire [31:0] correctPC;
+  wire [31:0] Bpcout, Jpcout;
 
   wire ExtoptoEX, ALUSrctoEX, RegDsttoEX, MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX;
   wire zerotoEX, shfsrctoEX, loadad;
@@ -45,7 +47,7 @@ module datapath (clk, reset);
     mux5selectI = 0;
     I1 = 0;
 
-    #605 begin 
+    #605 begin
       mux1selectI = 1;
       mux5selectI = 1;
       I1 = 1;
@@ -53,7 +55,7 @@ module datapath (clk, reset);
 
   end
 
-  pc PC(clk, reset, topc, toIU, regpc, jrtoMe, I1&loadad);
+  pc PC(clk, reset, topc, toIU, regpc, jrtoMe, I1&loadad, correctPC, jumpSuccess);
 
   IUnit iunit(toIU, pcNewtoIF, instoIF);
 
@@ -62,6 +64,10 @@ module datapath (clk, reset);
     immtoID, pcNewtoID, busAtoID, busBtoID, targettoID, jumpSuccess, instoID, clk, I1&loadad);
 
   registers rgi(RegWrtoRe, rwtoRe, rs, rt, busW, busAtoID, busBtoID, clk);
+
+  JumpPc jump(pcNewtoID, immtoID, targettoID, Bpcout, Jpcout);
+  predict pre(BpctoMe, pcNewtoMe, BtoMe, zerotoMe, BtoID, jumpSuccess, mux1select, correctPC);
+
 
   IDEX idex(ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
     BtoID, MentoRegtoID, RegWrtoID, jrtoID, jartoID, JtoID,
@@ -91,14 +97,14 @@ module datapath (clk, reset);
     ALUouttoMe, MentoRegtoRe, RegWrtoRe, jartoRe, JtoRe, rwtoRe, pcNewtoRe,
     ALUout, clk, MenouttoMen, MenouttoRe);
 
-  assign mux1selet = BtoMe & zerotoMe;
-  assign jumpSuccess = mux1selet | JtoMe | jrtoMe;
+  //assign mux1selet = BtoMe & zerotoMe;
+  //assign jumpSuccess = mux1selet | JtoMe | jrtoMe;
 
-  mux2_32 mux1(pcNewtoIF, BpctoMe, mux1selet&mux1selectI, tomux5_0);
+  mux2_32 mux1(pcNewtoIF, Bpcout, mux1selet&mux1selectI, tomux5_0);
   mux2_5 mux2(rttoEX, rdtoEX, RegDsttoEX, rwtoEX);
   mux2_32 mux3(ALUout, MenouttoRe, MentoRegtoRe, tomux4_0);
   mux2_32 mux4(tomux4_0, pcNewtoRe, jartoRe|JtoRe, busW);
-  mux2_32 mux5(tomux5_0, JpctoMe, JtoMe&mux5selectI, topc);
+  mux2_32 mux5(tomux5_0, Jpcout, JtoID&mux5selectI, topc);
 
   //for register jump
   mux2_32 mux6(busAtoMe, busW, RegWrtoRe&(rwtoRe == rstoMe), regpc);

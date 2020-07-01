@@ -1,9 +1,11 @@
-module pc (clk, reset, topc, toIU, busAtoMe, jr, loadad);
+module pc (clk, reset, topc, toIU, busAtoMe, jr, loadad, correctPC, jumpSuccess);
   input clk, reset;
   input [31:0] topc;
   input [31:0] busAtoMe;
   input jr;
   input loadad;
+  input jumpSuccess;
+  input [31:0] correctPC;
 
   output [31:0] toIU;
 
@@ -16,6 +18,8 @@ module pc (clk, reset, topc, toIU, busAtoMe, jr, loadad);
       pc = busAtoMe;
     else if(loadad == 0)
       pc <= topc;
+    else if(jumpSuccess == 1)
+      pc <= correctPC;
   end
 
   assign toIU = pc;
