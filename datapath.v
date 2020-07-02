@@ -30,6 +30,8 @@ module datapath (clk, reset);
   wire MenWrtoMe, BtoMe, MentoRegtoMe, RegWrtoMe, jrtoMe, jartoMe, JtoMe;
   wire zerotoMe;
   wire mux1selet, jumpSuccess;
+  wire B_J_jump;
+  wire Jr_jump;
   wire [4:0] rwtoMe, rstoMe, rttoMe;
   wire [31:0] pcNewtoMe, ALUouttoMe, busBtoMe, MenouttoMen, JpctoMe, BpctoMe;
   wire [31:0] instoMe, busAtoMe;
@@ -61,12 +63,13 @@ module datapath (clk, reset);
 
   IFID ifidRegister(pcNewtoIF, instoIF, ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID, BtoID, MentoRegtoID,
     RegWrtoID, jrtoID, jartoID, JtoID, rs, rt, rd, ALUOptoID, shfsrctoID, shfttoID,
-    immtoID, pcNewtoID, busAtoID, busBtoID, targettoID, jumpSuccess, instoID, clk, I1&loadad);
+    immtoID, pcNewtoID, busAtoID, busBtoID, targettoID, jumpSuccess, instoID, clk,
+    I1&loadad, B_J_jump, Jr_jump);
 
   registers rgi(RegWrtoRe, rwtoRe, rs, rt, busW, busAtoID, busBtoID, clk);
 
   JumpPc jump(pcNewtoID, immtoID, targettoID, Bpcout, Jpcout);
-  predict pre(BpctoMe, pcNewtoMe, BtoMe, zerotoMe, BtoID, jumpSuccess, mux1select, correctPC);
+  predict pre(BpctoMe, pcNewtoMe, BtoMe, zerotoMe, BtoID, jumpSuccess, mux1selet, correctPC);
 
 
   IDEX idex(ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
@@ -77,7 +80,8 @@ module datapath (clk, reset);
     MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
     shfsrctoEX, shfttoEX, ALUOptoEX, immtoEX,
     pcNewtoEX, busAtoEX, busBtoEX, clk, targettoID, targettoEX,
-    jumpSuccess, instoID, instoEX, rs, rt, rd, rstoEX, rttoEX, rdtoEX, I1&loadad);
+    jumpSuccess, instoID, instoEX, rs, rt, rd, rstoEX, rttoEX, rdtoEX, I1&loadad,
+    B_J_jump, Jr_jump);
 
   ExecUnit execu(ExtoptoEX, ALUSrctoEX, shfsrctoEX, shfttoEX, ALUOptoEX, immtoEX,
     pcNewtoEX, busAtoEX, busBtoEX, ALUouttoEX, JpctoEX, BpctoEX, zerotoEX, targettoEX,
@@ -89,7 +93,7 @@ module datapath (clk, reset);
     MenWrtoMe, BtoMe, MentoRegtoMe, RegWrtoMe, jrtoMe, jartoMe, JtoMe,
     zerotoMe, rwtoMe, ALUouttoMe, busBtoMe, JpctoMe, BpctoMe, clk,
     instoEX, instoMe, pcNewtoMe, jumpSuccess, busAtoEX, busAtoMe,
-    rstoEX, rstoMe, rttoEX, rttoMe, I1&loadad);
+    rstoEX, rstoMe, rttoEX, rttoMe, I1&loadad, Jr_jump);
 
   DM dm(MenWrtoMe, ALUouttoMe, tomem, MenouttoMen, instoMe[31:26], clk);
 
@@ -98,7 +102,8 @@ module datapath (clk, reset);
     ALUout, clk, MenouttoMen, MenouttoRe);
 
   //assign mux1selet = BtoMe & zerotoMe;
-  //assign jumpSuccess = mux1selet | JtoMe | jrtoMe;
+  assign B_J_jump = mux1selet | JtoMe;
+  assign Jr_jump = jrtoMe;
 
   mux2_32 mux1(pcNewtoIF, Bpcout, mux1selet&mux1selectI, tomux5_0);
   mux2_5 mux2(rttoEX, rdtoEX, RegDsttoEX, rwtoEX);

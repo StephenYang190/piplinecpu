@@ -20,7 +20,7 @@ module predict(BpctoMe, pcNewtoMe, BtoMe, zerotoMe, BtoID, jumpSuccess, mux1sele
     integer i;
 
     initial begin
-      for (i=0; i < 1024; i=i+1) BHL[i] = 0;
+      for (i=0; i < 1024; i=i+1) BHL[i] = 1;
     end
 
     always @(*) begin

@@ -6,7 +6,7 @@ module IDEX (ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
   MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
   shfsrctoEX, shfttoEX, ALUOptoEX, immtoEX,
   pcNewtoEX, busAtoEX, busBtoEX, clk, targettoID, targettoEX, jumpSuccess,
-  instoID, instoEX, rs, rt, rd, rstoEX, rttoEX, rdtoEX, loadad);
+  instoID, instoEX, rs, rt, rd, rstoEX, rttoEX, rdtoEX, loadad, B_J_jump, Jr_jump);
 
   input ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
     BtoID, MentoRegtoID, RegWrtoID, jrtoID, jartoID, JtoID, shfsrctoID;
@@ -18,6 +18,7 @@ module IDEX (ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
   input jumpSuccess;
   input [4:0] rs, rt, rd;
   input loadad;
+  input B_J_jump,Jr_jump;
 
   output ExtoptoEX, ALUSrctoEX, RegDsttoEX, MenWrtoEX, BtoEX,
     MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX, shfsrctoEX;
@@ -40,7 +41,7 @@ module IDEX (ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
   reg [4:0] rstoEX, rttoEX, rdtoEX;
 
   always @ (negedge clk) begin
-    if (jumpSuccess == 1) begin
+    if (jumpSuccess == 1 | B_J_jump == 1 | Jr_jump == 1) begin
       MentoRegtoEX <= 0;
       ALUSrctoEX <= 0;
       RegDsttoEX <= 0;

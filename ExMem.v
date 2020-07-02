@@ -3,7 +3,7 @@ module ExMem (MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
   MenWrtoMe, BtoMe, MentoRegtoMe, RegWrtoMe, jrtoMe, jartoMe, JtoMe,
   zerotoMe, rwtoMe, ALUout, busBtoMe, JpctoMe, BpctoMe, clk,
   instoEX, instoMe, pcNewtoMe, jumpSuccess, busAtoEX, busAtoMe,
-  rstoEX, rstoMe, rttoEX, rttoMe, loadad);
+  rstoEX, rstoMe, rttoEX, rttoMe, loadad, Jr_jump);
 
   input MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
     zerotoEX;
@@ -12,6 +12,7 @@ module ExMem (MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
   input jumpSuccess;
   input [31:0] busAtoEX;
   input loadad;
+  input Jr_jump;
 
   output MenWrtoMe, BtoMe, MentoRegtoMe, RegWrtoMe, jrtoMe, jartoMe, JtoMe,
     zerotoMe;
@@ -31,7 +32,7 @@ module ExMem (MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
   reg [31:0] instoMe, busAtoMe;
 
   always @ (negedge clk) begin
-    if (jumpSuccess == 1 | loadad == 1) begin
+    if (jumpSuccess == 1 | loadad == 1 | Jr_jump == 1) begin
 
       MentoRegtoMe <= 0;
       MenWrtoMe <= 0;
@@ -75,7 +76,7 @@ module ExMem (MenWrtoEX, BtoEX, MentoRegtoEX, RegWrtoEX, jrtoEX, jartoEX, JtoEX,
       rttoMe <= rttoEX;
 
     end
-    
+
   end
 
 endmodule // ExMem

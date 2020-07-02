@@ -1,11 +1,13 @@
 module IFID(pcNewtoIF, instoIF, ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID, BtoID, MentoRegtoID,
   RegWrtoID, jrtoID, jartoID, JtoID, rs, rt, rd, ALUOptoID, shfsrctoID, shfttoID,
-  immtoID, pcNewtoID, busAtoID, busBtoID, targettoID, jumpSuccess, instoID, clk, loadad);
+  immtoID, pcNewtoID, busAtoID, busBtoID, targettoID, jumpSuccess, instoID, clk,
+  loadad, B_J_jump, Jr_jump);
 
   input [31:0] pcNewtoIF, instoIF;
   input clk;
   input jumpSuccess;
   input loadad;
+  input B_J_jump, Jr_jump;
 
   output ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID, BtoID, MentoRegtoID,
   RegWrtoID, jrtoID, jartoID, JtoID, shfsrctoID;
@@ -25,7 +27,7 @@ module IFID(pcNewtoIF, instoIF, ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID, Bt
   reg [31:0] pc, ins;
 
   always @ (negedge clk) begin
-    if (jumpSuccess == 1) begin
+    if (jumpSuccess == 1 | B_J_jump == 1 | Jr_jump == 1) begin
       pc <= 32'b0;
       ins <= {6'b111111, 26'b0};
     end
