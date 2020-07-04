@@ -41,7 +41,7 @@ module IDEX (ExtoptoID, ALUSrctoID, RegDsttoID, MenWrtoID,
   reg [4:0] rstoEX, rttoEX, rdtoEX;
 
   always @ (negedge clk) begin
-    if (jumpSuccess == 1 | B_J_jump == 1 | Jr_jump == 1) begin
+    if (jumpSuccess == 1 | Jr_jump == 1) begin
       MentoRegtoEX <= 0;
       ALUSrctoEX <= 0;
       RegDsttoEX <= 0;

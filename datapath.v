@@ -102,7 +102,7 @@ module datapath (clk, reset);
     ALUout, clk, MenouttoMen, MenouttoRe);
 
   //assign mux1selet = BtoMe & zerotoMe;
-  assign B_J_jump = mux1selet | JtoMe;
+  assign B_J_jump = mux1selet | JtoID;
   assign Jr_jump = jrtoMe;
 
   mux2_32 mux1(pcNewtoIF, Bpcout, mux1selet&mux1selectI, tomux5_0);
